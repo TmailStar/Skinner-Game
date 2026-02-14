@@ -1,0 +1,173 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>The Human Skinner Box Game</title>
+<style>
+body {
+    font-family: Arial, sans-serif;
+    text-align: center;
+    background: linear-gradient(to right, #4facfe, #00f2fe);
+    color: white;
+    margin: 0;
+    padding: 0;
+}
+.container {
+    padding: 20px;
+}
+button {
+    padding: 12px 20px;
+    font-size: 16px;
+    margin: 10px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+}
+.correct { background-color: #2ecc71; }
+.wrong { background-color: #e74c3c; }
+.hidden { display: none; }
+#timer {
+    font-size: 24px;
+    margin: 10px;
+}
+#scoreBoard {
+    font-size: 20px;
+    margin: 10px;
+}
+.fade {
+    animation: fadeEffect 1s;
+}
+@keyframes fadeEffect {
+    from {opacity: 0;}
+    to {opacity: 1;}
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+<h1>🎮 The Human Skinner Box</h1>
+<div id="intro">
+<p>Experience Operant Conditioning Live!</p>
+<button onclick="startGame()">Start Game</button>
+</div>
+
+<div id="gameSection" class="hidden">
+<h2 id="wordDisplay"></h2>
+<div id="timer">Time: 30</div>
+<div id="scoreBoard">Score: 0</div>
+<button onclick="clap()">Clap 👏</button>
+</div>
+
+<div id="quizSection" class="hidden">
+<h2>Quiz Time!</h2>
+<div id="quizContainer"></div>
+</div>
+
+</div>
+
+<script>
+let psychologyWords = ["Memory","Intelligence","Conditioning","Reinforcement"];
+let mixedWords = ["Apple","Chair","Dog","Table"];
+let allWords = psychologyWords.concat(mixedWords);
+let score = 0;
+let timeLeft = 30;
+let interval;
+let currentWord = "";
+
+function startGame() {
+    document.getElementById("intro").classList.add("hidden");
+    document.getElementById("gameSection").classList.remove("hidden");
+    startTimer();
+    showWord();
+}
+
+function startTimer() {
+    interval = setInterval(function() {
+        timeLeft--;
+        document.getElementById("timer").innerText = "Time: " + timeLeft;
+        if(timeLeft <= 0) {
+            clearInterval(interval);
+            endGame();
+        }
+    }, 1000);
+}
+
+function showWord() {
+    if(timeLeft <= 0) return;
+    currentWord = allWords[Math.floor(Math.random() * allWords.length)];
+    let wordDisplay = document.getElementById("wordDisplay");
+    wordDisplay.innerText = currentWord;
+    wordDisplay.classList.add("fade");
+    setTimeout(() => wordDisplay.classList.remove("fade"), 1000);
+    setTimeout(showWord, 2000);
+}
+
+function clap() {
+    if(psychologyWords.includes(currentWord)) {
+        score++;
+        alert("✅ Positive Reinforcement! +1 Point");
+    } else {
+        score--;
+        alert("❌ Incorrect Clap! -1 Point");
+    }
+    document.getElementById("scoreBoard").innerText = "Score: " + score;
+}
+
+function endGame() {
+    document.getElementById("gameSection").classList.add("hidden");
+    document.getElementById("quizSection").classList.remove("hidden");
+    loadQuiz();
+}
+
+let quizData = [
+{
+q: "Operant Conditioning was proposed by:",
+a: ["Pavlov","Watson","Skinner","Freud"],
+correct: 2
+},
+{
+q: "Removing unpleasant stimulus to increase behavior is:",
+a: ["Punishment","Negative Reinforcement","Extinction","Shaping"],
+correct: 1
+},
+{
+q: "Gambling follows which schedule?",
+a: ["Fixed Ratio","Variable Ratio","Fixed Interval","Variable Interval"],
+correct: 1
+},
+{
+q: "Behavior decreases when reinforcement stops is called:",
+a: ["Extinction","Discrimination","Shaping","Reward"],
+correct: 0
+},
+{
+q: "Adding unpleasant stimulus to reduce behavior is:",
+a: ["Positive Punishment","Negative Reinforcement","Reward","Interval"],
+correct: 0
+}
+];
+
+function loadQuiz() {
+    let container = document.getElementById("quizContainer");
+    quizData.forEach((item, index) => {
+        let questionHTML = "<p>" + item.q + "</p>";
+        item.a.forEach((option, i) => {
+            questionHTML += "<button onclick='checkAnswer(" + index + "," + i + ")'>" + option + "</button><br>";
+        });
+        container.innerHTML += questionHTML + "<hr>";
+    });
+}
+
+function checkAnswer(qIndex, ansIndex) {
+    if(ansIndex === quizData[qIndex].correct) {
+        alert("🎉 Correct! Reinforcement Applied!");
+    } else {
+        alert("❌ Incorrect! Try Again!");
+    }
+}
+</script>
+
+</body>
+</html>
